@@ -8,6 +8,7 @@ typechain-types
 .prettierignore
 yarn.lock
 .vscode/extensions/GitHub-Copilot-*/
+yarn-error.log
 
 #Hardhat files
 cache

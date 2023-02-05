@@ -9,11 +9,11 @@ const deployMyContract: DeployFunction = async function (hre: HardhatRuntimeEnvi
     const { deployer } = await getNamedAccounts();
     const chainId: number = network.config.chainId!;
 
-    console.log("Deploying MyContract.....");
+    console.log("Deploying Escrow Contract.....");
 
     const args: any[] = [];
 
-    const MyContract = await deploy("MyContract", {
+    const Escrow = await deploy("Escrow", {
         from: deployer,
         args: args,
         log: true,
@@ -25,8 +25,8 @@ const deployMyContract: DeployFunction = async function (hre: HardhatRuntimeEnvi
     console.log("----------------------------------------------------");
 
     if (chainId !== 31337 && process.env.ETHERSCAN_API_KEY) {
-        await verify(MyContract.address, args);
+        await verify(Escrow.address, args);
     }
 };
 export default deployMyContract;
-deployMyContract.tags = ["all", "MyContract"];
+deployMyContract.tags = ["all", "Escrow"];
