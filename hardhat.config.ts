@@ -20,7 +20,7 @@ const config: HardhatUserConfig = {
     solidity: {
         compilers: [{ version: "0.8.17" }, { version: "0.6.6" }],
     },
-    defaultNetwork: "hardhat",
+    defaultNetwork: "goerli",
     networks: {
         hardhat: {
             chainId: 31337,

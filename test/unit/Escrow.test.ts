@@ -80,6 +80,12 @@ network.config.chainId !== 31337
                   await EscrowContract.setMinFundAmount(VAL);
                   assert.equal((await EscrowContract.getMinFundAmount()).toString(), VAL.toString());
               });
+
+              it("Emits the MinFundAmtSet Event", async function () {
+                  await expect(EscrowContract.setMinFundAmount(VAL))
+                      .to.emit(EscrowContract, "MinFundAmtSet")
+                      .withArgs(VAL);
+              });
           });
 
           describe("buyerDeposit", function () {
@@ -122,6 +128,12 @@ network.config.chainId !== 31337
               it("Sets the buyer correctly", async function () {
                   await EscrowContract.buyerDeposit({ value: VAL });
                   assert.equal(player1.address, await EscrowContract.getBuyer());
+              });
+
+              it("Emits the FundsDeposited Event", async function () {
+                  await expect(EscrowContract.buyerDeposit({ value: VAL }))
+                      .to.emit(EscrowContract, "FundsDeposited")
+                      .withArgs(player1.address, VAL);
               });
           });
 
@@ -236,6 +248,17 @@ network.config.chainId !== 31337
                   const treasury = await ethers.provider.getBalance(EscrowContract.address);
                   assert.equal(treasury.toString(), "0");
               });
+
+              it("Emits the SaleFinished Event", async function () {
+                  EscrowContract = await EscrowContract.connect(player1);
+                  await EscrowContract.buyerDeposit({ value: VAL });
+                  EscrowContract = await EscrowContract.connect(deployer);
+                  await network.provider.send("evm_increaseTime", [601]);
+                  await network.provider.send("evm_mine", []);
+                  await expect(EscrowContract.finishSale())
+                      .to.emit(EscrowContract, "SaleFinished")
+                      .withArgs(deployer.address, player1.address);
+              });
           });
 
           describe("cancelSale", function () {
@@ -284,6 +307,14 @@ network.config.chainId !== 31337
                   await EscrowContract.cancelSale();
                   const treasury = await ethers.provider.getBalance(EscrowContract.address);
                   assert.equal(treasury.toString(), "0");
+              });
+
+              it("Emits the SaleCancelled Event", async function () {
+                  EscrowContract = await EscrowContract.connect(player1);
+                  await EscrowContract.buyerDeposit({ value: VAL });
+                  await expect(EscrowContract.cancelSale())
+                      .to.emit(EscrowContract, "SaleCancelled")
+                      .withArgs(player1.address, deployer.address);
               });
           });
       });
