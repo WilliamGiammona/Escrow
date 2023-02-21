@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.17; 
+pragma solidity ^0.8.17;
 
 import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
@@ -24,7 +24,7 @@ contract Escrow is ERC721, Ownable {
     event FundsDeposited(address indexed buyer, uint256 indexed amountDeposited);
     event SaleFinished(address indexed seller, address indexed buyer);
     event SaleCancelled(address indexed buyer, address indexed owner);
-    
+
     enum EscrowState {
         NoFundsDeposited,
         FundsDeposited
@@ -85,7 +85,7 @@ contract Escrow is ERC721, Ownable {
             revert Escrow__AmountMustBeGreaterThanZero();
         }
         s_minFundAmount = minFundAmount;
-        
+
         emit MinFundAmtSet(minFundAmount);
     }
 
@@ -106,7 +106,7 @@ contract Escrow is ERC721, Ownable {
         }
 
         s_escrowState = EscrowState.FundsDeposited;
-        s_startTime = block.timestamp;  // less secure, only used for simplicity for test contract
+        s_startTime = block.timestamp; // less secure, only used for simplicity for test contract
         s_buyer = msg.sender;
 
         emit FundsDeposited(msg.sender, msg.value);
@@ -155,6 +155,10 @@ contract Escrow is ERC721, Ownable {
     }
 
     // View / Pure Functions
+
+    function isOwner() public view returns (bool) {
+        return msg.sender == owner();
+    }
 
     function getEscrowState() public view returns (EscrowState) {
         return s_escrowState;
