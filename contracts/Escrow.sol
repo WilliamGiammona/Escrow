@@ -122,17 +122,20 @@ contract Escrow is ERC721, Ownable {
             revert Escrow__NotEnoughTimeHasPassed();
         }
 
+        address buyer = s_buyer;
+        s_buyer = address(0);
+
         s_escrowState = EscrowState.NoFundsDeposited;
 
-        safeTransferFrom(msg.sender, s_buyer, 1);
-        transferOwnership(s_buyer);
+        safeTransferFrom(msg.sender, buyer, 1);
+        transferOwnership(buyer);
 
         (bool success, ) = payable(msg.sender).call{value: address(this).balance}("");
         if (!success) {
             revert Escrow__TransferFailed();
         }
 
-        emit SaleFinished(msg.sender, s_buyer);
+        emit SaleFinished(msg.sender, buyer);
     }
 
     /**
@@ -144,21 +147,20 @@ contract Escrow is ERC721, Ownable {
             revert Escrow__NotInvolvedInSale();
         }
 
+        address buyer = s_buyer;
+        s_buyer = address(0);
+
         s_escrowState = EscrowState.NoFundsDeposited;
 
-        (bool success, ) = payable(s_buyer).call{value: address(this).balance}("");
+        (bool success, ) = payable(buyer).call{value: address(this).balance}("");
         if (!success) {
             revert Escrow__TransferFailed();
         }
 
-        emit SaleCancelled(s_buyer, owner());
+        emit SaleCancelled(buyer, owner());
     }
 
     // View / Pure Functions
-
-    function isOwner() public view returns (bool) {
-        return msg.sender == owner();
-    }
 
     function getEscrowState() public view returns (EscrowState) {
         return s_escrowState;
